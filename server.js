@@ -2,7 +2,10 @@
 const mysql = require('mysql2');
 const inquirer = require('require');
 
+// import all classes from lib
 const Employee = require('./lib/employee');
+const Department = require('./lib/department');
+const Role = require('./lib/role');
 
 const db = mysql.createConnection(
     {
@@ -36,12 +39,28 @@ function start() {
                 viewDept();
                 break;
             case "Add Employees":
-                addEmployee()
+                addNewEmployee()
                 break;
             case "Update Employee Role":
-                updateRole()
+                addNewRole()
                 break;
-            case ""
+            case "View All Roles":
+                viewRoles()
+                break;
+            case "Add Role":
+                addNewRole()
+                break;
+            case "View All Employees":
+                viewEmployee()
+                break;
+            case "Add Department":
+                addNewDept()
+                break;
+            default:
+                console.log("Bye!");
+                process.exit();    
         }
     })
 }
+
+// Display all departments
