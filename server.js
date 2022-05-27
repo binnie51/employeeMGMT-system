@@ -14,7 +14,7 @@ const db = mysql.createConnection(
     console.log(`Connected to the employee_management_db database.`)
 );
 
-function init() {
+function start() {
     inquirer
     .prompt({
         name: 'action-menu',
