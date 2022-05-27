@@ -2,6 +2,8 @@
 const mysql = require('mysql2');
 const inquirer = require('require');
 
+const Employee = require('./lib/employee');
+
 const db = mysql.createConnection(
     {
         host: 'localhost',
@@ -35,6 +37,11 @@ function init() {
                 break;
             case "Add Employees":
                 addEmployee()
+                break;
+            case "Update Employee Role":
+                updateRole()
+                break;
+            case ""
         }
     })
 }

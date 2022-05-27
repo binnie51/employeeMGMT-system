@@ -5,7 +5,8 @@ USE employee_management_db;
 
 CREATE TABLE department (
     id INT NOT NULL AUTO_INCREMENT,
-    name VARCHAR(30) NOT NULL
+    name VARCHAR(30) NOT NULL,
+    PRIMARY KEY (id)
 );
 
 CREATE TABLE role (
@@ -13,7 +14,7 @@ CREATE TABLE role (
     title VARCHAR(30) NOT NULL,
     salary DECIMAL,
     department_id INT,
-    PRIMARY KEY (id)
+    PRIMARY KEY (id),
 );
 
 CREATE TABLE employee (
@@ -24,7 +25,6 @@ CREATE TABLE employee (
     manager_id INT DEFAULT NULL 0,
     PRIMARY KEY (id)
     FOREIGN KEY (manager_id) REFERENCES employee(id),
-    FOREIGN KEY (role_id) REFERENCES role(id)
 );
 
 SELECT * FROM department;
