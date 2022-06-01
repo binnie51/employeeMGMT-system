@@ -1,44 +1,46 @@
 // Add dependencies
-const mysql = require('mysql2');
+// const mysql = require('mysql2/promise')
 const inquirer = require('inquirer');
-const table = require('console.table')
+const table = require('console.table');
 
 // import all classes from lib
 const Employee = require('./lib/employee');
 const Department = require('./lib/department');
 const Role = require('./lib/role');
 
-const db = mysql.createConnection(
-    {
-        host: 'localhost',
-        user: 'root',
-        password: 'rootroot',
-        database: 'employee_management_db'
-    },
-    console.log('Connected to the employee_management_db database.')
-);
+// const db = mysql.createConnection(
+//     {
+//         host: 'localhost',
+//         user: 'root',
+//         password: 'rootroot',
+//         database: 'employee_management_db'
+//     },
+//     console.log('Connected to the employee_management_db database.')
+// );
 
-function init() {
-    inquirer
-    .prompt({
-        name: 'menu',
-        type: 'list',
-        message: 'What would you like to do?',
-        choices: [
-            "View All Employees",
-            "Add Employees",
-            "Update Employee",
-            "View All Roles",
-            "Add Role",
-            "View All Department",
-            "Add Department",
-            "Delete Role",
-            "Done"
-        ]
-    })
+const menuQuestions = {
+    name: 'menu',
+    type: 'list',
+    message: 'What would you like to do?',
+    choices: [
+        "View All Employees",
+        "Add Employees",
+        "Update Employee",
+        "View All Roles",
+        "Add Role",
+        "View All Department",
+        "Add Department",
+        "Delete Role",
+        "Done"
+    ]
+}
+
+async function init() {
+    await inquirer
+    .prompt(menuQuestions)
     .then( (answer) => {
         switch (answer.menu) {
-            case "View All Department": // ok
+            case "View All Department": 
                 viewDept();
                 break;
             case "Add Employees":
@@ -49,22 +51,23 @@ function init() {
             case "Delete Role":
                 roleDelete()
                 break;
-            case "View All Roles": // ok
+            case "View All Roles": 
                 viewRoles()
                 break;
             case "Add Role":
                 addNewRole()
                 break;
-            case "View All Employees": // ok
+            case "View All Employees": 
                 viewEmployee()
                 break;
-            case "Add Department": // ok
+            case "Add Department":
                 addNewDept()
                 break;
             case "Done":
-                db.end();
-                break;    
+                console.log('Closing database. Bye!')
+                process.exit(0);  
         }
+        return;
     })
 }
 
@@ -184,8 +187,8 @@ async function addNewEmployee() {
     const displayManagers = await manager.selectAllEmployee();
     const managersList = function(displayManagers) {
         const listManagers = [];
+        listManagers.push('0.None');
         displayManagers.forEach(element => {
-            listManagers.push('0.None');
             displayManagers.push('element.id' + '.' + element.first_name + '.' + element.last_name);
         });
         return listManagers
@@ -218,7 +221,7 @@ async function addNewEmployee() {
     await inquirer.prompt(questionsNewEmployee)
     .then( (userInput) => {
         let detailsEmployee;
-        const roleIdSeparator = userInput.roleID.spli('.');
+        const roleIdSeparator = userInput.roleID.split('.');
         const roleId = Number(roleIdSeparator[0]);
 
         const managerIdSeparator = userInput.managerName;
@@ -229,7 +232,7 @@ async function addNewEmployee() {
             detailsEmployee = new Employee(userInput.firstName, lastName, roleId, managerId);
         }
         else {
-            detailsEmployee = new Employee(userInput.firstName, lastName, roleId, null)
+            detailsEmployee = new Employee(userInput.firstName, userInput.lastName, roleId, null)
         }
         insertNewEmployee(detailsEmployee);
     });
@@ -271,7 +274,7 @@ async function roleDelete() {
 }
 
 // update employee role 
-async function updateEmployee() {
+function updateEmployee() {
     inquirer.prompt([
         {
             name:'employeeID',
