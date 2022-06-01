@@ -64,7 +64,7 @@ async function init() {
                 addNewDept()
                 break;
             case "Done":
-                console.log('Closing database. Bye!')
+                console.log('Closing database application. Bye!')
                 process.exit(0);  
         }
         return;
@@ -224,12 +224,12 @@ async function addNewEmployee() {
         const roleIdSeparator = userInput.roleID.split('.');
         const roleId = Number(roleIdSeparator[0]);
 
-        const managerIdSeparator = userInput.managerName;
+        const managerIdSeparator = userInput.managerName.split('.');
         const managerId = Number(managerIdSeparator[0]);
 
         // if manager's ID exist on, then this employee is a 'manager' to be registered
         if (managerId > 0) {
-            detailsEmployee = new Employee(userInput.firstName, lastName, roleId, managerId);
+            detailsEmployee = new Employee(userInput.firstName, userInput.lastName, roleId, managerId);
         }
         else {
             detailsEmployee = new Employee(userInput.firstName, userInput.lastName, roleId, null)
