@@ -43,7 +43,7 @@ function init() {
                 addNewEmployee()
                 break;
             case "Update Employee Role":
-                addNewRole()
+                updateEmpRole()
                 break;
             case "View All Roles":
                 viewRoles()
@@ -127,6 +127,8 @@ async function addNewRole() {
         });
         return deptList;
     }
+
+    // Inquirer for new Role to be added
     const questionsNewRole = [
     {
         name: 'newRoleTitle',
@@ -164,6 +166,7 @@ async function insertNewRole(getRole) {
 
 // Add new employee to the table
 async function addNewEmployee() {
+    // role list
     const role = new Role();
     const displayRoleTable = await role.selectAllRole();
     const roleList = function(displayRoleTable) {
@@ -171,8 +174,20 @@ async function addNewEmployee() {
         displayRoleTable.forEach(element => {
             listRoles.push(element.id + '.' + element.title);
         });
-        return roleList;
+        return listRoles;
     }
+    // managers list 
+    const manager = new Employee();
+    const displayManagers = await manager.selectAllEmployee();
+    const managersList = function(displayManagers) {
+        const listManagers = [];
+        displayManagers.forEach(element => {
+            listManagers.push('0.None');
+            displayManagers.push('element.id' + '.' + element.first_name + '.' + element.last_name);
+        });
+        return listManagers
+    }
+    // Inquirer for new Employee to be added
     const questionsNewEmployee = [
         {
             name: 'firstName',
@@ -188,8 +203,65 @@ async function addNewEmployee() {
             name: 'roleID',
             message: 'Enter role ID:',
             type: 'list',
+            choices: managersList(displayRoleTable)
+        },
+        {
+            name: 'managerName',
+            maessage: "Enter employee's manager:",
+            type: 'list',
+            choices: managersList(displayManagers)
         }
     ]
+    await inquirer.prompt(questionsNewEmployee)
+    .then( (userInput) => {
+        let detailsEmployee;
+        const roleIdSeparator = userInput.roleID.spli('.');
+        const roleId = Number(roleIdSeparator[0]);
+
+        const managerIdSeparator = userInput.managerName;
+        const managerId = Number(managerIdSeparator[0]);
+
+        // if manager's ID exist on, then this employee is a 'manager' to be registered
+        if (managerId > 0) {
+            detailsEmployee = new Employee(userInput.firstName, lastName, roleId, managerId);
+        }
+        else {
+            detailsEmployee = new Employee(userInput.firstName, lastName, roleId, null)
+        }
+        insertNewEmployee(detailsEmployee);
+    });
+    return;
+}
+
+async function insertNewEmployee(detailsEmployee) {
+    await detailsEmployee.insertEmployee();
+    init();
+    return;
+}
+
+async function deleteRole() {
+    // role list to be used
+    let roleID;
+    const role = new Role();
+    const displayRoleTable = await role.selectAllRole();
+    const roleList = function(displayDeptTable) {
+        const listRoles = [];
+        displayDeptTable.forEach(element => {
+            listRoles.push(element.id = '.' + element.title);
+        });
+        return listRoles;
+    }
+    const questionsRole2bDelete = {
+            name: 'roleID',
+            message: 'Select roles to be deleted.',
+            type: 'list',
+            choices: roleList(displayRoleTable)
+        }
+        await inquirer.prompt(questionsRole2bDelete)
+        .then((userInput) => {
+            const idSeparator = userInput.roleID.split('.');
+            roleID = Number
+        })
 }
 
 // Initiate the program
