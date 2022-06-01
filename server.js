@@ -1,6 +1,7 @@
 // Add dependencies
 const mysql = require('mysql2');
-const inquirer = require('require');
+const inquirer = require('inquirer');
+const table = require('console.table')
 
 // import all classes from lib
 const Employee = require('./lib/employee');
@@ -13,8 +14,8 @@ const db = mysql.createConnection(
         user: 'root',
         password: 'rootroot',
         database: 'employee_management_db'
-    }.
-    console.log(`Connected to the employee_management_db database.`)
+    },
+    console.log('Connected to the employee_management_db database.')
 );
 
 function init() {
@@ -26,39 +27,41 @@ function init() {
         choices: [
             "View All Employees",
             "Add Employees",
-            "Update Employee Roles",
+            "Update Employee",
             "View All Roles",
             "Add Role",
             "View All Department",
             "Add Department",
+            "Delete Role",
             "Done"
         ]
     })
     .then( (answer) => {
         switch (answer.menu) {
-            case "View All Department":
+            case "View All Department": // ok
                 viewDept();
                 break;
             case "Add Employees":
                 addNewEmployee()
                 break;
-            case "Update Employee Role":
-                updateEmpRole()
+            case "Update Employer":
+                updateEmployee()
+            case "Delete Role":
+                roleDelete()
                 break;
-            case "View All Roles":
+            case "View All Roles": // ok
                 viewRoles()
                 break;
             case "Add Role":
                 addNewRole()
                 break;
-            case "View All Employees":
+            case "View All Employees": // ok
                 viewEmployee()
                 break;
-            case "Add Department":
+            case "Add Department": // ok
                 addNewDept()
                 break;
             case "Done":
-                console.log("Bye!");
                 db.end();
                 break;    
         }
@@ -203,7 +206,7 @@ async function addNewEmployee() {
             name: 'roleID',
             message: 'Enter role ID:',
             type: 'list',
-            choices: managersList(displayRoleTable)
+            choices: roleList(displayRoleTable)
         },
         {
             name: 'managerName',
@@ -239,7 +242,7 @@ async function insertNewEmployee(detailsEmployee) {
     return;
 }
 
-async function deleteRole() {
+async function roleDelete() {
     // role list to be used
     let roleID;
     const role = new Role();
@@ -260,8 +263,34 @@ async function deleteRole() {
         await inquirer.prompt(questionsRole2bDelete)
         .then((userInput) => {
             const idSeparator = userInput.roleID.split('.');
-            roleID = Number
-        })
+            roleID = Number(idSeparator[0]);
+        });
+        const roleDetails = new Role();
+        await roleDetails.deleteRole(roleID);
+        init();
+}
+
+// update employee role 
+async function updateEmployee() {
+    inquirer.prompt([
+        {
+            name:'employeeID',
+            message: "Enter employee's ID you wish to update:",
+            type: 'number'
+        },
+        {
+            name: 'roleID',
+            maessage: "Enter the updated role ID:",
+            type: 'number'
+        }
+    ])
+    .then( (userInput) => {
+        db.query('UPDATE employee_management_db SET role_id=? WHERE id= ?', [userInput.roleID, userInput.employeeID], (err, result) => {
+            if (err) throw console.error();
+            viewEmployee();
+            return;
+        });
+    });
 }
 
 // Initiate the program
