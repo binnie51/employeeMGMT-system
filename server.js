@@ -68,7 +68,7 @@ async function init() {
 }
 
 // Display all departments
-async function viewDept() {
+function viewDept() {
     // const dept = new Department();
     // const result = await dept.selectAllDept();
     // console.log('Department table displayed.')
@@ -84,7 +84,7 @@ async function viewDept() {
 }
 
 // Display all roles
-async function viewRoles() {
+function viewRoles() {
     // const role = new Role();
     // const result = await role.selectAllRole();
     // console.log('Role table displayed.')
@@ -101,7 +101,7 @@ async function viewRoles() {
 }
 
 // Display all employees
-async function viewEmployee() {
+function viewEmployee() {
     // const employee = new Employee();
     // const result = await employee.selectAllEmployee();
     // console.log('Employee table displayed.')
@@ -128,37 +128,41 @@ async function viewEmployee() {
 }
 
 // Add new a department to the table
+// conditionals set for users to input a new department name. Will not accept NULL as an entry
 async function addNewDept() {
     const questionNewDept = {
         name: 'newDeptName',
         message: 'What will you call this new department?',
-        type: 'input'
+        type: 'input',
+        validate: (value) => {
+            if (value) {
+                return true;
+            }
+            else {
+                console.log("You must enter a new department name!")
+            }
+        }
     }
-   await inquirer.prompt(questionNewDept)
-   .then( (userInput) => {
-       const getDept = new Department(userInput.addNewDept);
-       insertNewDept(getDept);
-   });
-   return;
-}
-
-async function insertNewDept(getDept) {
-    await getDept.insertDept();
-    init();
-    return;
+    await inquirer.prompt(questionNewDept)
+    .then( (userInput) => {
+        let values = userInput.newDeptName;
+        connection.promise().query(`INSERT INTO department (name) VALUES (?)`, values);
+        console.log("\n New role sucessfully added to the table!");
+        init();
+    });
 }
 
 // Add new role to the table
 async function addNewRole() {
-    const dept = new Department();
-    const displayDeptTable = await dept.selectAllDept();
-    const deptList = function (displayDeptTable) {
-        const listDepts = [];
-        displayDeptTable.forEach(element => {
-            listDepts.push(element.id + '.' + element.name)
-        });
-        return deptList;
-    }
+    // const dept = new Department();
+    // const displayDeptTable = await dept.selectAllDept();
+    // const deptList = function (displayDeptTable) {
+    //     const listDepts = [];
+    //     displayDeptTable.forEach(element => {
+    //         listDepts.push(element.id + '.' + element.name)
+    //     });
+    //     return deptList;
+    // }
 
     // Inquirer for new Role to be added
     const questionsNewRole = [
@@ -174,20 +178,21 @@ async function addNewRole() {
     },
     {
         name: 'roleInDept',
-        message: 'Select department for this role:',
+        message: 'Select department for this role',
         type: 'list',
         choices: deptList(displayDeptTable)
     }
     ]
     await inquirer.prompt(questionsNewRole)
     .then( (userInput) => {
-        const idSeparator = userInput.roleInDept.split('.');
-        const deptId = Number(idSeparator[0]);
-        const salary = parseFloat(userInput.salaryForRole);
-        const getRole = new Role(userInput.newRoleTitle, salary, deptId);
-        insertNewRole(getRole);
+        // const idSeparator = userInput.roleInDept.split('.');
+        // const deptId = Number(idSeparator[0]);
+        // const salary = parseFloat(userInput.salaryForRole);
+        // const getRole = new Role(userInput.newRoleTitle, salary, deptId);
+        // insertNewRole(getRole);
+        let values = [userInput.newRoleTitle, userInput.salaryForRole, userInput.roleInDept]
+        return connection.promise().query(`INSERT INTO role (title, salary, department_id) VALUES (?, ?, ?)`, values);
     });
-    return;
 }
 
 async function insertNewRole(getRole) {
