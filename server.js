@@ -75,27 +75,56 @@ async function viewDept() {
     // console.table(result);
     // init()
     // return;
-    connection.query()
+    connection.query(`SELECT id AS ID, name AS Department FROM department`, (err, result) => {
+        if (err) throw err;
+        console.log("Displaying all despartments.");
+        console.table(result);
+        init();
+    });
 }
 
 // Display all roles
 async function viewRoles() {
-    const role = new Role();
-    const result = await role.selectAllRole();
-    console.log('Role table displayed.')
-    console.table(result);
-    init();
-    return;
+    // const role = new Role();
+    // const result = await role.selectAllRole();
+    // console.log('Role table displayed.')
+    // console.table(result);
+    // init();
+    // return;
+    connection.query(`SELECT role.id AS ID, title AS Title, department.name AS Department, salary AS Salary FROM role
+    JOIN department ON role.department_id = department.id`, (err, result) => {
+        if (err) throw err;
+        console.log("Displaying existing roles.");
+        console.table(result);
+        init();
+    });
 }
 
 // Display all employees
 async function viewEmployee() {
-    const employee = new Employee();
-    const result = await employee.selectAllEmployee();
-    console.log('Employee table displayed.')
-    console.table(result);
-    init();
-    return;
+    // const employee = new Employee();
+    // const result = await employee.selectAllEmployee();
+    // console.log('Employee table displayed.')
+    // console.table(result);
+    // init();
+    // return;
+    connection.query(`SELECT
+    employee.id AS ID, 
+    employee.first_name AS FirstName,
+    employee.last_name AS LastName,
+    role.title AS Title,
+    role.salary AS Salary,
+    department.name AS Department,
+    CONCAT(manager.first_name, " ", manager.last_name) AS Manager
+    FROM employee
+    JOIN role ON employee.role_id = role.id
+    JOIN department ON role.department_id = department.id
+    LEFT OUTER JOIN employee manager ON manager.id = employee.id`, (err, result) => {
+        if (err) throw err;
+        console.log("Displaying current employees.");
+        console.table(result);
+        init();
+    });
 }
 
 // Add new a department to the table
