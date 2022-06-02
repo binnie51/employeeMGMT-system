@@ -207,13 +207,13 @@ async function addNewEmployee() {
         },
         {
             name: 'roleID',
-            message: 'Enter role ID:',
+            message: "Employee's role ID:",
             type: 'list',
             choices: roleList(displayRoleTable)
         },
         {
             name: 'managerName',
-            maessage: "Enter employee's manager:",
+            maessage: "Employee's manager:",
             type: 'list',
             choices: managersList(displayManagers)
         }
@@ -245,6 +245,7 @@ async function insertNewEmployee(detailsEmployee) {
     return;
 }
 
+// Delete a role
 async function roleDelete() {
     // role list to be used
     let roleID;
@@ -273,26 +274,60 @@ async function roleDelete() {
         init();
 }
 
-// update employee role 
-function updateEmployee() {
-    inquirer.prompt([
+//  Update employee role 
+async function updateEmployee() {
+    // prep role list
+    const role = new Role();
+    const displayRoleTable = await role.selectAllRole();
+    const roleList = function(displayRoleTable) {
+        const listRoles = [];
+        displayRoleTable.forEach(element => {
+            listRoles.push(element.id + '.' + element.title);
+        });
+        return listRoles;
+    }
+    // prep employee list
+    const employee = new Employee();
+    const displayEmp = await employee.selectAllEmployee();
+    const empList = function(displayEmp) {
+        const listEmployee = [];
+        displayEmp.forEach(element => {
+            listEmployee.push('element.id' + '.' + element.first_name + '.' + element.last_name);
+        });
+        return listEmployee;
+    }
+    const updateQuestions = [
         {
-            name:'employeeID',
-            message: "Enter employee's ID you wish to update:",
-            type: 'number'
+            name:'employee',
+            message: "Select an employee you wish to update:",
+            type: 'list',
+            choices: empList(displayEmp)
         },
         {
-            name: 'roleID',
-            maessage: "Enter the updated role ID:",
-            type: 'number'
+            name: 'newRole',
+            maessage: "Choose new role for this employee:",
+            type: 'list',
+            choices: roleList(displayRoleTable)
+
         }
-    ])
+    ]
+    await inquirer.prompt(updateQuestions)
     .then( (userInput) => {
-        db.query('UPDATE employee_management_db SET role_id=? WHERE id= ?', [userInput.roleID, userInput.employeeID], (err, result) => {
-            if (err) throw console.error();
-            viewEmployee();
-            return;
-        });
+        let employeeDetails
+        const empIdSeparator = userInput.employee.split('.');
+        const empId = Number(empIdSeparator[0]);
+
+        const roleIdSeparator = userInput.newRole.split('.');
+        const roleId = Number(roleIdSeparator[0]);
+
+        if (empId === userInput.employee) {
+            employeeDetails = new Employee(firstName, lastName, userInput.newRole, userInput.employee)
+        }
+
+        // db.query('UPDATE employee_management_db SET role_id=? WHERE id= ?', [userInput.roleID, userInput.employeeID], (err, result) => {
+        //     console.log("Employee's data is updated!")
+        //     return;
+        // });
     });
 }
 

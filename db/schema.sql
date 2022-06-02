@@ -22,13 +22,13 @@ CREATE TABLE employee (
     id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
     first_name VARCHAR(30),
     last_name VARCHAR(30),
-    role_id INT,
-    FOREIGN KEY (role_id) REFERENCES role(id),
-    manager_id INT DEFAULT NULL,
-    FOREIGN KEY (manager_id) REFERENCES employee(id)
+    role_id INT NULL,
+    manager_id INT NULL,
+    FOREIGN KEY (manager_id) REFERENCES employee(id),
+    FOREIGN KEY (role_id) REFERENCES role(id)
     ON DELETE SET NULL
 );
 
-SELECT * FROM department;
-SELECT * FROM role;
-SELECT * FROM employee;
+-- SELECT * FROM department;
+-- SELECT * FROM role;
+-- SELECT * FROM employee
