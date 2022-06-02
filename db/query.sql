@@ -1,4 +1,5 @@
-SELECT 
+SELECT
+employee.id, 
 employee.first_name AS FirstName,
 employee.last_name AS LastName,
 role.title AS Title,

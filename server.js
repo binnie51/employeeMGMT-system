@@ -1,22 +1,14 @@
 // Add dependencies
-// const mysql = require('mysql2/promise')
+const mysql = require('mysql2');
 const inquirer = require('inquirer');
 const table = require('console.table');
+const database = require('./config/connection');
+require('dotenv').config();
 
 // import all classes from lib
-const Employee = require('./lib/employee');
-const Department = require('./lib/department');
-const Role = require('./lib/role');
-
-// const db = mysql.createConnection(
-//     {
-//         host: 'localhost',
-//         user: 'root',
-//         password: 'rootroot',
-//         database: 'employee_management_db'
-//     },
-//     console.log('Connected to the employee_management_db database.')
-// );
+// const Employee = require('./lib/employee');
+// const Department = require('./lib/department');
+// const Role = require('./lib/role');
 
 const menuQuestions = {
     name: 'menu',
@@ -73,12 +65,13 @@ async function init() {
 
 // Display all departments
 async function viewDept() {
-    const dept = new Department();
-    const result = await dept.selectAllDept();
-    console.log('Department table displayed.')
-    console.table(result);
-    init()
-    return;
+    // const dept = new Department();
+    // const result = await dept.selectAllDept();
+    // console.log('Department table displayed.')
+    // console.table(result);
+    // init()
+    // return;
+
 }
 
 // Display all roles
@@ -313,22 +306,28 @@ async function updateEmployee() {
     ]
     await inquirer.prompt(updateQuestions)
     .then( (userInput) => {
-        let employeeDetails
+        let employeeUpdate
         const empIdSeparator = userInput.employee.split('.');
         const empId = Number(empIdSeparator[0]);
 
         const roleIdSeparator = userInput.newRole.split('.');
         const roleId = Number(roleIdSeparator[0]);
 
-        if (empId === userInput.employee) {
-            employeeDetails = new Employee(firstName, lastName, userInput.newRole, userInput.employee)
+        if (empId && roleId) {
+            employeeUpdate = new Employee(firstName, lastName, userInput.newRole, userInput.employee)
         }
-
+        updateEmployeeDetails(employeeUpdate);
         // db.query('UPDATE employee_management_db SET role_id=? WHERE id= ?', [userInput.roleID, userInput.employeeID], (err, result) => {
         //     console.log("Employee's data is updated!")
         //     return;
         // });
     });
+    return;
+}
+
+async function updateEmployeeDetails(detailsEmployee) {
+    await detailsEmployee.employeeUpdate();
+    init();
 }
 
 // Initiate the program
