@@ -2,13 +2,16 @@
 const mysql = require('mysql2');
 const inquirer = require('inquirer');
 const table = require('console.table');
-const database = require('./config/connection');
+const connection = require('./helper/connection');
 require('dotenv').config();
 
-// import all classes from lib
-// const Employee = require('./lib/employee');
-// const Department = require('./lib/department');
-// const Role = require('./lib/role');
+// test connection of the server, 
+// then proceeds to initialize app if connection has been established
+connection.connect(err => {
+    if (err) throw err;
+    console.log('Connection established!');
+    init();
+});
 
 const menuQuestions = {
     name: 'menu',
@@ -57,7 +60,8 @@ async function init() {
                 break;
             case "Done":
                 console.log('Closing database application. Bye!')
-                process.exit(0);  
+                connection.end();
+                break;
         }
         return;
     })
@@ -71,7 +75,7 @@ async function viewDept() {
     // console.table(result);
     // init()
     // return;
-
+    connection.query()
 }
 
 // Display all roles
@@ -329,6 +333,3 @@ async function updateEmployeeDetails(detailsEmployee) {
     await detailsEmployee.employeeUpdate();
     init();
 }
-
-// Initiate the program
-init();
