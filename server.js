@@ -3,6 +3,7 @@ const mysql = require('mysql2');
 const inquirer = require('inquirer');
 const table = require('console.table');
 const connection = require('./helper/connection');
+const funcs = require('./helper/functions');
 require('dotenv').config();
 
 // test connection of the server, 
@@ -69,43 +70,64 @@ async function init() {
 
 // Display all departments
 function viewDept() {
-    connection.query(`SELECT id AS ID, name AS Department FROM department`, (err, result) => {
-        if (err) throw err;
-        console.log("Displaying all despartments.");
-        console.table(result);
+    funcs.getDepts()
+    .then((results) => {
+        console.log("\nDisplaying all despartments.");
+        console.table(results);
         init();
+    })
+    .catch((err) => {
+        throw err;
     });
 }
 
 // Display all roles
 function viewRoles() {
-    connection.query(`SELECT role.id AS ID, title AS Title, department.name AS Department, salary AS Salary FROM role
-    JOIN department ON role.department_id = department.id`, (err, result) => {
-        if (err) throw err;
-        console.log("Displaying existing roles.");
-        console.table(result);
-        init();
+    // connection.query(`SELECT role.id AS ID, title AS Title, department.name AS Department, salary AS Salary FROM role
+    // JOIN department ON role.department_id = department.id`, (err, result) => {
+    //     if (err) throw err;
+    //     console.log("\nDisplaying existing roles.");
+    //     console.table(result);
+    //     init();
+    // });
+    funcs.getRoles()
+    .then((results) => {
+        console.log("\nDisplaying existing roles.");
+        console.table(results);
+        init()
+    })
+    .catch((err) => {
+        throw err;
     });
 }
 
 // Display all employees
 function viewEmployee() {
-    connection.query(`SELECT
-    employee.id AS ID, 
-    employee.first_name AS FirstName,
-    employee.last_name AS LastName,
-    role.title AS Title,
-    role.salary AS Salary,
-    department.name AS Department,
-    CONCAT(manager.first_name, " ", manager.last_name) AS Manager
-    FROM employee
-    JOIN role ON employee.role_id = role.id
-    JOIN department ON role.department_id = department.id
-    LEFT OUTER JOIN employee manager ON manager.id = employee.id`, (err, result) => {
-        if (err) throw err;
-        console.log("Displaying current employees.");
-        console.table(result);
+    // connection.query(`SELECT
+    // employee.id AS ID, 
+    // employee.first_name AS FirstName,
+    // employee.last_name AS LastName,
+    // role.title AS Title,
+    // role.salary AS Salary,
+    // department.name AS Department,
+    // CONCAT(manager.first_name, " ", manager.last_name) AS Manager
+    // FROM employee
+    // JOIN role ON employee.role_id = role.id
+    // JOIN department ON role.department_id = department.id
+    // LEFT OUTER JOIN employee manager ON manager.id = employee.id`, (err, result) => {
+    //     if (err) throw err;
+    //     console.log("Displaying current employees.");
+    //     console.table(result);
+    //     init();
+    // });
+    funcs.getEmployees()
+    .then((results) => {
+        console.log("\nDisplaying current active employees.");
+        console.table(results);
         init();
+    })
+    .catch((err) => {
+        throw err;
     });
 }
 

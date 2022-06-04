@@ -1,11 +1,9 @@
 // get connection to database
-const { up } = require('inquirer/lib/utils/readline');
-const { promise } = require('./connection');
 const connection = require('./connection');
 
 function getDepts() {
     return new Promise((resolve, reject) => {
-        connection.query(`SELECT * FROM department`, function(err, results) {
+        connection.query(`SELECT id AS ID, name AS Department FROM department`, function(err, results) {
             if (err) reject (err);
             resolve(results);
         });
@@ -18,7 +16,6 @@ function insertDept(name, callBack) {
         name: name
     }, (err, results) => {
         if (err) throw err;
-        console.clear();
         console.log("\n Department ${name} sucessfully added!");
         callBack();
     })
