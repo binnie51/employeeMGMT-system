@@ -86,7 +86,7 @@ function insertEmployee(firstName, lastName, roleId, managerId, callBack) {
 }
 
 function employeeUpdate(roleID, employeeID, callBack) {
-    const updateQuery = `UPDATE employee SET (?) WHERE id= (?)`;
+    const updateQuery = `UPDATE employee SET ? WHERE id= ?`;
     connection.query(updateQuery, [
         {
             role_id: roleID

@@ -14,6 +14,7 @@ connection.connect(err => {
     init();
 });
 
+// Function to ge Manager's name displayed
 function getName(e) {
     return `${e.FirstName} ${e.LastName}`;
 }
@@ -46,10 +47,10 @@ async function init() {
             case "Add Employees":
                 addNewEmployee()
                 break;
-            case "Update Employer":
+            case "Update Employee":
                 updateEmployee()
             case "Delete Role":
-                roleDelete()
+                // roleDelete()
                 break;
             case "View All Roles": 
                 viewRoles()
@@ -223,12 +224,12 @@ async function addNewEmployee() {
             name: 'managerName',
             maessage: "Select employee's manager:",
             type: 'list',
-            choices: () => ["None", ...employees.map((e) => getName(e))]
+            choices: () => ["None", ...employees.map((name) => getName(name))]
         }]
         inquirer.prompt(questionsNewEmployee)
         .then((userInput) => {
             const role = roles.find((d) => d.title.toLowerCase() === userInput.role.toLowerCase());
-            const employee = employee.find((d) => {
+            const employee = employees.find((d) => {
                 const name = getName(d);
                 return name.toLocaleLowerCase() === userInput.managerName.toLowerCase();
             });
@@ -242,93 +243,70 @@ async function addNewEmployee() {
 
 
 // Delete a role
-async function roleDelete() {
-    // role list to be used
-    let roleID;
-    const role = new Role();
-    const displayRoleTable = await role.selectAllRole();
-    const roleList = function(displayDeptTable) {
-        const listRoles = [];
-        displayDeptTable.forEach(element => {
-            listRoles.push(element.id = '.' + element.title);
-        });
-        return listRoles;
-    }
-    const questionsRole2bDelete = {
-            name: 'roleID',
-            message: 'Select roles to be deleted.',
-            type: 'list',
-            choices: roleList(displayRoleTable)
-        }
-        await inquirer.prompt(questionsRole2bDelete)
-        .then((userInput) => {
-            const idSeparator = userInput.roleID.split('.');
-            roleID = Number(idSeparator[0]);
-        });
-        const roleDetails = new Role();
-        await roleDetails.deleteRole(roleID);
-        init();
-}
+// async function roleDelete() {
+//     // role list to be used
+//     let roleID;
+//     const role = new Role();
+//     const displayRoleTable = await role.selectAllRole();
+//     const roleList = function(displayDeptTable) {
+//         const listRoles = [];
+//         displayDeptTable.forEach(element => {
+//             listRoles.push(element.id = '.' + element.title);
+//         });
+//         return listRoles;
+//     }
+//     const questionsRole2bDelete = {
+//             name: 'roleID',
+//             message: 'Select roles to be deleted.',
+//             type: 'list',
+//             choices: roleList(displayRoleTable)
+//         }
+//         await inquirer.prompt(questionsRole2bDelete)
+//         .then((userInput) => {
+//             const idSeparator = userInput.roleID.split('.');
+//             roleID = Number(idSeparator[0]);
+//         });
+//         const roleDetails = new Role();
+//         await roleDetails.deleteRole(roleID);
+//         init();
+// }
 
 //  Update employee role 
 async function updateEmployee() {
-    // prep role list
-    const role = new Role();
-    const displayRoleTable = await role.selectAllRole();
-    const roleList = function(displayRoleTable) {
-        const listRoles = [];
-        displayRoleTable.forEach(element => {
-            listRoles.push(element.id + '.' + element.title);
-        });
-        return listRoles;
-    }
-    // prep employee list
-    const employee = new Employee();
-    const displayEmp = await employee.selectAllEmployee();
-    const empList = function(displayEmp) {
-        const listEmployee = [];
-        displayEmp.forEach(element => {
-            listEmployee.push('element.id' + '.' + element.first_name + '.' + element.last_name);
-        });
-        return listEmployee;
-    }
+    const roles = await funcs.getRoles();
+    const employees = await funcs.getEmployees();
+
+    // inquirer
     const updateQuestions = [
         {
-            name:'employee',
+            name:'empName',
             message: "Select an employee you wish to update:",
             type: 'list',
-            choices: empList(displayEmp)
+            choices: employees.map((e) => getName(e))
         },
         {
             name: 'newRole',
             maessage: "Choose new role for this employee:",
             type: 'list',
-            choices: roleList(displayRoleTable)
-
+            choices: () => {
+                let choices = [];
+                for (let i = 0; i< roles.length; i++) {
+                    choices.push(roles[i].title);
+                }
+                return choices;
+            }
         }
     ]
-    await inquirer.prompt(updateQuestions)
-    .then( (userInput) => {
-        let employeeUpdate
-        const empIdSeparator = userInput.employee.split('.');
-        const empId = Number(empIdSeparator[0]);
-
-        const roleIdSeparator = userInput.newRole.split('.');
-        const roleId = Number(roleIdSeparator[0]);
-
-        if (empId && roleId) {
-            employeeUpdate = new Employee(firstName, lastName, userInput.newRole, userInput.employee)
-        }
-        updateEmployeeDetails(employeeUpdate);
-        // db.query('UPDATE employee_management_db SET role_id=? WHERE id= ?', [userInput.roleID, userInput.employeeID], (err, result) => {
-        //     console.log("Employee's data is updated!")
-        //     return;
-        // });
+    inquirer.prompt(updateQuestions)
+    .then((userInput) => {
+        const newRole = roles.find((role) => role.title.toLocaleLowerCase() === userInput.newRole.toLocaleLowerCase());
+        const employee = employees.find((n) => {
+            const name = getName(n);
+            return name.toLocaleLowerCase() === userInput.empName.toLocaleLowerCase();
+        });
+        funcs.employeeUpdate(
+            newRole.id, employee.id,
+            init
+        );
     });
-    return;
-}
-
-async function updateEmployeeDetails(detailsEmployee) {
-    await detailsEmployee.employeeUpdate();
-    init();
 }
