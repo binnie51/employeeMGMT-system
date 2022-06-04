@@ -99,6 +99,22 @@ function employeeUpdate(roleID, employeeID, callBack) {
     });
 }
 
+function deleteRole(role, callBack) {
+    const deleteQuery = `DELETE FROM role WHERE ?`;
+    connection.query(deleteQuery, 
+        {
+            title: role
+        },
+        (err, results) => {
+            if (err) throw err;
+            console.log("\nRole deleted.");
+            callBack();
+        }
+    )
+}
+
+
+
 module.exports = {
     getDepts,
     insertDept,
@@ -106,5 +122,6 @@ module.exports = {
     insertRole,
     getEmployees,
     insertEmployee,
-    employeeUpdate
+    employeeUpdate,
+    deleteRole
 }

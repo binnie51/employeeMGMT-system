@@ -14,11 +14,12 @@ connection.connect(err => {
     init();
 });
 
-// Function to ge Manager's name displayed
+// Function to get each individual employees' name displayed on the selection
 function getName(e) {
     return `${e.FirstName} ${e.LastName}`;
 }
 
+// menu options
 const menuQuestions = {
     name: 'menu',
     type: 'list',
@@ -50,7 +51,7 @@ async function init() {
             case "Update Employee":
                 updateEmployee()
             case "Delete Role":
-                // roleDelete()
+                roleDelete()
                 break;
             case "View All Roles": 
                 viewRoles()
@@ -224,7 +225,7 @@ async function addNewEmployee() {
             name: 'managerName',
             maessage: "Select employee's manager:",
             type: 'list',
-            choices: () => ["None", ...employees.map((name) => getName(name))]
+            choices: () => ["None", ...employees.map((d) => getName(d))]
         }]
         inquirer.prompt(questionsNewEmployee)
         .then((userInput) => {
@@ -243,33 +244,28 @@ async function addNewEmployee() {
 
 
 // Delete a role
-// async function roleDelete() {
-//     // role list to be used
-//     let roleID;
-//     const role = new Role();
-//     const displayRoleTable = await role.selectAllRole();
-//     const roleList = function(displayDeptTable) {
-//         const listRoles = [];
-//         displayDeptTable.forEach(element => {
-//             listRoles.push(element.id = '.' + element.title);
-//         });
-//         return listRoles;
-//     }
-//     const questionsRole2bDelete = {
-//             name: 'roleID',
-//             message: 'Select roles to be deleted.',
-//             type: 'list',
-//             choices: roleList(displayRoleTable)
-//         }
-//         await inquirer.prompt(questionsRole2bDelete)
-//         .then((userInput) => {
-//             const idSeparator = userInput.roleID.split('.');
-//             roleID = Number(idSeparator[0]);
-//         });
-//         const roleDetails = new Role();
-//         await roleDetails.deleteRole(roleID);
-//         init();
-// }
+async function roleDelete() {
+    const roles = await funcs.getRoles();
+
+    // inquirer
+    const questionsRole2bDelete = {
+            name: 'roleID',
+            message: 'Select roles to be deleted.',
+            type: 'list',
+            choices: () => {
+                let choices = [];
+                for (let i = 0; i< roles.length; i++) {
+                    choices.push(roles[i].title);
+                }
+                return choices;
+            }
+        }
+        inquirer.prompt(questionsRole2bDelete)
+        .then((userInput) => {
+            funcs.deleteRole(userInput.roleID, 
+                init)
+        });
+}
 
 //  Update employee role 
 async function updateEmployee() {
