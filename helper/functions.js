@@ -11,12 +11,14 @@ function getDepts() {
 }
 
 function insertDept(name, callBack) {
-    const insertQuery = `INSERT INTO department SET (?)`;
-    connection.query(insertQuery, {
-        name: name
-    }, (err, results) => {
+    const insertQuery = `INSERT INTO department SET ?`;
+    connection.query(insertQuery, 
+        {
+            name: name
+    }, 
+    (err, results) => {
         if (err) throw err;
-        console.log("\n Department ${name} sucessfully added!");
+        console.log("\nNew department sucessfully added!");
         callBack();
     })
 }
@@ -24,7 +26,7 @@ function insertDept(name, callBack) {
 function getRoles() {
     return new Promise((resolve, reject) => {
         connection.query(`SELECT role.id AS ID, title AS Title, department.name AS Department, salary AS Salary FROM role
-        JOIN department ON role.department_id = department.id`, function(err, results) {
+        JOIN department ON role.department_id = department.id;`, function(err, results) {
             if (err) reject (err);
             resolve(results);
         });
@@ -32,14 +34,15 @@ function getRoles() {
 }
 
 function insertRole(title, salary, departmentID, callBack) {
-    const insertQuery = `INSERT INTO role SET (?)`;
-    connection.query(insertQuery, {
-        title: title,
-        salary: salary,
-        department_id: departmentID
-    }, (err, results) => {
+    const insertQuery = `INSERT INTO role SET ?`;
+    connection.query(insertQuery, 
+        {
+            title: title,
+            salary: salary,
+            department_id: departmentID
+    }, 
+    (err, results) => {
         if (err) throw err;
-        console.clear();
         console.log("\n New role sucessfully added!");
         callBack();
     })
@@ -65,16 +68,17 @@ function getEmployees() {
     });
 }
 
-function insertEmployee(fName, lName, roleID, managerID, callBack) {
-    const insertQuery = `INSERT INTO employee SET (?)`;
-    connection.query(insertQuery, {
-        first_name: fName,
-        last_name: lName,
-        role_id: roleID,
-        manager_id: managerID
-    }, (err, results) => {
+function insertEmployee(firstName, lastName, roleId, managerId, callBack) {
+    const insertQuery = `INSERT INTO employee SET ?`;
+    connection.query(insertQuery, 
+        {
+            first_name: firstName,
+            last_name: lastName,
+            role_id: roleId,
+            manager_id: managerId
+    }, 
+    (err, results) => {
         if (err) throw err;
-        console.clear();
         console.log("\nEmployee sucessfully added! Welcome aboard!");
         callBack();
     })
@@ -89,7 +93,6 @@ function employeeUpdate(roleID, employeeID, callBack) {
         employeeID
     ], (err, results) => {
         if (err) throw err;
-        console.clear();
         console.log("\nEmployee update success!");
         callBack();
     });
