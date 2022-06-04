@@ -15,18 +15,19 @@ function insertDept(name, callBack) {
     connection.query(insertQuery, 
         {
             name: name
-    }, 
-    (err, results) => {
-        if (err) throw err;
-        console.log("\nNew department sucessfully added!");
-        callBack();
-    })
+        }, 
+        (err, results) => {
+            if (err) throw err;
+            console.log("\nNew department sucessfully added!");
+            callBack();
+        }
+    )
 }
 
 function getRoles() {
     return new Promise((resolve, reject) => {
-        connection.query(`SELECT role.id AS ID, title AS Title, department.name AS Department, salary AS Salary FROM role
-        JOIN department ON role.department_id = department.id;`, function(err, results) {
+        connection.query(`SELECT role.id, title, salary, department.name from role
+        JOIN department ON department.id = role.department_id;`, function(err, results) {
             if (err) reject (err);
             resolve(results);
         });
@@ -40,11 +41,11 @@ function insertRole(title, salary, departmentID, callBack) {
             title: title,
             salary: salary,
             department_id: departmentID
-    }, 
-    (err, results) => {
-        if (err) throw err;
-        console.log("\n New role sucessfully added!");
-        callBack();
+        }, 
+        (err, results) => {
+            if (err) throw err;
+            console.log("\n New role sucessfully added!");
+            callBack();
     })
 }
 

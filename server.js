@@ -167,8 +167,6 @@ async function addNewRole() {
         ]
         inquirer.prompt(questionsNewRole)
         .then( (userInput) => {
-            // let values = [userInput.newRoleTitle, userInput.salaryForRole, userInput.roleInDept];
-            // return connection.promise().query(`INSERT INTO role (title, salary, department_id) VALUES (?, ?, ?)`, values);
             let choiceDept;
             for (let i = 0; i < results.length; i++) {
                 if (results[i].name === userInput.roleInDept) {
@@ -213,7 +211,13 @@ async function addNewEmployee() {
             name: 'role',
             message: "Select role for this employee",
             type: 'list',
-            choices: () => roles.map((d) => d.title)
+            choices: () => {
+                let choices = [];
+                for (let i = 0; i< roles.length; i++) {
+                    choices.push(roles[i].title);
+                }
+                return choices;
+            }
         },
         {
             name: 'managerName',
