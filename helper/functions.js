@@ -3,7 +3,7 @@ const connection = require('./connection');
 
 function getDepts() {
     return new Promise((resolve, reject) => {
-        connection.query(`SELECT id AS ID, name AS Department FROM department`, function(err, results) {
+        connection.query(`SELECT * FROM department`, function(err, results) {
             if (err) reject (err);
             resolve(results);
         });
@@ -62,7 +62,7 @@ function getEmployees() {
         FROM employee
         JOIN role ON employee.role_id = role.id
         JOIN department ON role.department_id = department.id
-        LEFT OUTER JOIN employee manager ON manager.id = employee.id;`, function (err, results) {
+        LEFT JOIN employee manager ON employee.manager_id = manager.id`, function (err, results) {
             if (err) reject (err);
             resolve(results);
         });
@@ -99,6 +99,20 @@ function employeeUpdate(roleID, employeeID, callBack) {
     });
 }
 
+function deleteDept(dept, callBack) {
+    const deleteQuery = `DELETE FROM department WHERE ?`;
+    connection.query(deleteQuery, 
+        {
+            name: dept
+        },
+        (err, results) =>{
+            if (err) throw err;
+            console.log("\nA department has been deleted.");
+            callBack();
+        }
+    );
+}
+
 function deleteRole(role, callBack) {
     const deleteQuery = `DELETE FROM role WHERE ?`;
     connection.query(deleteQuery, 
@@ -107,13 +121,25 @@ function deleteRole(role, callBack) {
         },
         (err, results) => {
             if (err) throw err;
-            console.log("\nRole deleted.");
+            console.log("\nA role has been deleted.");
             callBack();
         }
-    )
+    );
 }
 
-
+function deleteEmp(employeeID, callBack) {
+    const deleteQuery = `DELETE FROM employee WHERE ?`;
+    connection.query(deleteQuery, 
+        {
+            id: employeeID
+        },
+        (err, results) => {
+            if (err) throw err;
+            console.log("\nAn employee has been removed from CMS.");
+            callBack();
+        }
+    );
+}
 
 module.exports = {
     getDepts,
@@ -123,5 +149,7 @@ module.exports = {
     getEmployees,
     insertEmployee,
     employeeUpdate,
-    deleteRole
+    deleteRole,
+    deleteDept,
+    deleteEmp
 }

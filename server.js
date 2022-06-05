@@ -26,13 +26,15 @@ const menuQuestions = {
     message: 'What would you like to do?',
     choices: [
         "View All Employees",
-        "Add Employees",
+        "Add Employee",
         "Update Employee",
         "View All Roles",
         "Add Role",
         "View All Department",
         "Add Department",
+        "Delete Department",
         "Delete Role",
+        "Delete Employee",
         "Done"
     ]
 }
@@ -64,6 +66,9 @@ async function init() {
                 break;
             case "Add Department":
                 addNewDept()
+                break;
+            case "Delete Department":
+                deptDelete()
                 break;
             case "Done":
                 console.log('Closing database application. Bye!')
@@ -241,31 +246,78 @@ async function addNewEmployee() {
     });
 }
 
-
+// Delete a department
+async function deptDelete() {
+    const departments = await funcs.getDepts();
+    //inquirer
+    const questionsDept2bDelete = {
+        name: 'deptName',
+        message: 'Select a department to be deleted:',
+        type: 'list',
+        choices: () => {
+            let choices = [];
+            for (let i = 0; i< departments.length; i++) {
+                choices.push(departments[i].name);
+            }
+            return choices;
+        }
+    }
+    inquirer.prompt(questionsDept2bDelete)
+    .then((userInput) => {
+        funcs.deleteDept(userInput.deptName,
+            init)
+    });
+}
 
 // Delete a role
-async function roleDelete() {
-    const roles = await funcs.getRoles();
+// async function roleDelete() {
+//     const roles = await funcs.getRoles();
+//     // inquirer
+//     const questionsRole2bDelete = {
+//         name: 'roleID',
+//         message: 'Select a role to be deleted:',
+//         type: 'list',
+//         choices: () => {
+//             let choices = [];
+//             for (let i = 0; i< roles.length; i++) {
+//                 choices.push(roles[i].title);
+//             }
+//             return choices;
+//             }
+//         }
+//         inquirer.prompt(questionsRole2bDelete)
+//         .then((userInput) => {
+//             funcs.deleteRole(userInput.roleID, 
+//                 init)
+//         });
+// }
 
-    // inquirer
-    const questionsRole2bDelete = {
-            name: 'roleID',
-            message: 'Select roles to be deleted.',
-            type: 'list',
-            choices: () => {
-                let choices = [];
-                for (let i = 0; i< roles.length; i++) {
-                    choices.push(roles[i].title);
-                }
-                return choices;
-            }
-        }
-        inquirer.prompt(questionsRole2bDelete)
-        .then((userInput) => {
-            funcs.deleteRole(userInput.roleID, 
-                init)
-        });
-}
+// // Delete an employee
+// async function empDelete() {
+//     const employees = `SELECT * FROM employee`;
+//     connection.query(employees, (err, results) => {
+//         if (err) throw err;
+ 
+//         // inquirer
+//         const questionsEmp2bDelete = {
+//             name: 'empID',
+//             message: 'Select an employee to be deleted:',
+//             type: 'list',
+//             choices: () => {
+//                 let choices = [];
+//                 for (let i = 0; i< employees.length; i++) {
+//                     choices.push(roles[i].title);
+//                 }
+//                 return choices;
+//             }
+//             inquirer.prompt(questionsEmp2bDelete)
+//             .then((userInput) => {
+//                 funcs.deleteDept(userInput.deptName,
+//                     init)
+//             });
+            
+//     }
+// }
 
 //  Update employee role 
 async function updateEmployee() {
