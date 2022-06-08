@@ -6,6 +6,14 @@ const connection = require('./helper/connection');
 const funcs = require('./helper/functions');
 require('dotenv').config();
 
+// figlet package to provides op/title  to the cms
+const figlet = require('figlet');
+
+figlet("Employee \n \n Manager", (err, data) => {
+    if (err) throw err;
+    console.log(data);
+})
+
 // test connection of the server, 
 // then proceeds to initialize app if connection has been established
 connection.connect(err => {

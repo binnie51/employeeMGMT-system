@@ -15,7 +15,7 @@ Github: https://github.com/binnie51/employeeMGMT-system.git
 2. Run the server by typing 'node server'
 
 ## Usage 
-Browse through the menu and simply customize the your database. 
+Browse through the menu and simply customize the your CMS database by choosing options and answering to inquirers. Users may view the department, role, and employee table individually, as well as alter the database whenever changes occur in the company. The changes include adding and deleting each tables and updating employee's role & manager. 
 
 ## Contribute
 Do not contribute!
