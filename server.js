@@ -296,36 +296,26 @@ async function roleDelete() {
 }
 
 // // Delete an employee
-function empDelete() {
-    const employees = `SELECT * FROM employee`;
-    connection.query(employees, (err, results) => {
-        if (err) throw err;
- 
+async function empDelete() {
+    const employees = await funcs.getEmployees();
+
         // inquirer
         const questionsEmp2bDelete = {
-            name: 'empName',
-            message: 'Select an employee to be deleted:',
+            name: 'emp',
+            message: 'Choose an ID of an employee to be deleted:',
             type: 'list',
-            choices: () => {
-                let choices = [];
-                for (let i = 0; i< results.length; i++) {
-                    choices.push(results[i].id);
-                }
-                return choices;
-                }
+            choices: employees.map((e) => getName(e))
         } 
         inquirer.prompt(questionsEmp2bDelete)
         .then((userInput) => {
-            const employee = results.find((n) => {
+            const employee = employees.find((n) => {
                 const name = getName(n);
-                return name.toLocaleLowerCase() === userInput.empName.toLocaleLowerCase();
+                return name.toLocaleLowerCase() === userInput.emp.toLocaleLowerCase();
             });
 
-            funcs.deleteDept(employee.id,
+            funcs.deleteEmp(employee.id,
                 init)
         });
-            
-    })
 }
 
 //  Update employee role 
